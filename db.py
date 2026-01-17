@@ -56,6 +56,22 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_wardrobe_items_user_id ON wardrobe_items(user_id)
     """)
 
+    # Create saved_images table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS saved_images (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            image_id UUID NOT NULL REFERENCES wardrobe_items(id) ON DELETE CASCADE,
+            note TEXT,
+            saved_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        )
+    """)
+
+    # Create index on user_id for saved_images
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_saved_images_user_id ON saved_images(user_id)
+    """)
+
     conn.commit()
     cur.close()
     conn.close()

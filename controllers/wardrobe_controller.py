@@ -40,6 +40,11 @@ def upload_wardrobe_items(files: List[UploadFile], user: CurrentUser):
 def get_user_wardrobe(user: CurrentUser):
     items = WardrobeRepository.get_by_user_id(user.id)
 
+    # Get all saved image ids for this user
+    from repositories.saved_image_repository import SavedImageRepository
+    saved_images = SavedImageRepository.get_by_user(user.id)
+    image_id_to_saved = {str(img["image_id"]): str(img["id"]) for img in saved_images}
+
     return {
         "success": True,
         "count": len(items),
@@ -50,7 +55,9 @@ def get_user_wardrobe(user: CurrentUser):
                 "categoryGroup": item["category_group"],
                 "category": item["category"],
                 "attributes": item["attributes"],
-                "created_at": item["created_at"].isoformat()
+                "created_at": item["created_at"].isoformat(),
+                "saved": str(item["id"]) in image_id_to_saved,
+                "saved_image_id": image_id_to_saved.get(str(item["id"]))
             }
             for item in items
         ]

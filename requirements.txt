@@ -8,3 +8,7 @@ python-jose[cryptography]
 passlib[bcrypt]
 bcrypt==4.0.1
 pydantic[email]
+torch
+git+https://github.com/openai/CLIP.git
+pillow
+requests

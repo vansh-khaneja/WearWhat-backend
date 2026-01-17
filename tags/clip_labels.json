@@ -1,0 +1,253 @@
+{
+  "categoryGroups": {
+    "upperWear": [
+      "a product photo of a t-shirt",
+      "a product photo of a shirt",
+      "a product photo of a blouse",
+      "a product photo of a sweater",
+      "a product photo of a hoodie",
+      "a product photo of a tank top",
+      "a product photo of a polo shirt",
+      "upper body clothing worn on the torso"
+    ],
+    "bottomWear": [
+      "a product photo of pants",
+      "a product photo of jeans",
+      "a product photo of shorts",
+      "a product photo of a skirt",
+      "a product photo of trousers",
+      "a product photo of leggings",
+      "lower body clothing worn on the legs"
+    ],
+    "outerWear": [
+      "a product photo of a jacket",
+      "a product photo of a coat",
+      "a product photo of a blazer",
+      "a product photo of a cardigan",
+      "a product photo of a vest",
+      "a product photo of a parka",
+      "outerwear worn over other clothes"
+    ],
+    "footwear": [
+      "a product photo of shoes",
+      "a product photo of sneakers",
+      "a product photo of boots",
+      "a product photo of sandals",
+      "a product photo of heels",
+      "a product photo of loafers",
+      "footwear worn on the feet"
+    ],
+    "otherItems": [
+      "a product photo of a bag",
+      "a product photo of a hat",
+      "a product photo of a scarf",
+      "a product photo of a belt",
+      "a product photo of sunglasses",
+      "a product photo of jewelry",
+      "a product photo of a watch",
+      "fashion accessories"
+    ]
+  },
+
+  "categories": {
+    "upperWear": {
+      "T-Shirt": ["a t-shirt", "basic tee", "crew neck t-shirt"],
+      "Long Sleeve T-Shirt": ["a long sleeve t-shirt", "full sleeve tee"],
+      "Sleeveless T-Shirt": ["a sleeveless t-shirt", "muscle tee"],
+      "Polo Shirt": ["a polo shirt", "collared polo", "golf shirt"],
+      "Tank Top": ["a tank top", "sleeveless top", "vest top"],
+      "Cami Top": ["a cami top", "camisole", "spaghetti strap top"],
+      "Crop Top": ["a crop top", "cropped shirt", "midriff top"],
+      "Blouse": ["a blouse", "dressy top", "formal blouse"],
+      "Shirt": ["a button up shirt", "dress shirt", "collared shirt"],
+      "Casual Shirt": ["a casual shirt", "relaxed fit shirt"],
+      "Formal Shirt": ["a formal shirt", "dress shirt", "business shirt"],
+      "Sweatshirt": ["a sweatshirt", "crew neck sweatshirt", "pullover"],
+      "Hoodie": ["a hoodie", "hooded sweatshirt", "pullover hoodie"],
+      "Sweater": ["a sweater", "knit sweater", "pullover sweater"],
+      "Sweater Vest": ["a sweater vest", "knit vest", "sleeveless sweater"],
+      "Cardigan": ["a cardigan", "button up cardigan", "open front cardigan"],
+      "Sports Top": ["a sports top", "athletic top", "workout top"],
+      "Bodysuit": ["a bodysuit", "one piece top", "leotard style top"],
+      "Kurti": ["a kurti", "indian tunic", "ethnic kurti top"]
+    },
+    "bottomWear": {
+      "Jeans": ["blue jeans", "denim jeans", "classic jeans"],
+      "Trousers": ["trousers", "dress pants", "formal trousers"],
+      "Shorts": ["shorts", "casual shorts", "summer shorts"],
+      "Joggers": ["joggers", "jogging pants", "sweatpants with cuffs"],
+      "Track Pants": ["track pants", "athletic pants", "sport pants"],
+      "Chinos": ["chinos", "khaki pants", "cotton chinos"],
+      "Cargo Pants": ["cargo pants", "pants with pockets", "utility pants"],
+      "Skirt": ["a skirt", "mini skirt", "midi skirt", "long skirt"],
+      "Leggings": ["leggings", "tight pants", "stretch leggings"],
+      "Formal Pants": ["formal pants", "dress pants", "office trousers"]
+    },
+    "outerWear": {
+      "Jacket": ["a jacket", "casual jacket", "lightweight jacket"],
+      "Denim Jacket": ["a denim jacket", "jean jacket", "blue denim jacket"],
+      "Hooded Jacket": ["a hooded jacket", "jacket with hood", "windbreaker"],
+      "Bomber Jacket": ["a bomber jacket", "flight jacket", "varsity jacket"],
+      "Coat": ["a coat", "long coat", "winter coat"],
+      "Blazer": ["a blazer", "suit jacket", "formal blazer"],
+      "Overcoat": ["an overcoat", "long overcoat", "wool overcoat"],
+      "Sweater Jacket": ["a sweater jacket", "knit jacket", "cardigan jacket"]
+    },
+    "footwear": {
+      "Sneakers": ["sneakers", "casual sneakers", "athletic sneakers"],
+      "Running Shoes": ["running shoes", "athletic running shoes", "sport shoes"],
+      "Loafers": ["loafers", "slip on loafers", "casual loafers"],
+      "Sandals": ["sandals", "open toe sandals", "summer sandals"],
+      "Slippers": ["slippers", "house slippers", "flip flops"],
+      "Boots": ["boots", "ankle boots", "leather boots"],
+      "Ethnic Footwear": ["ethnic footwear", "traditional shoes", "mojari"],
+      "Formal Shoes": ["formal shoes", "dress shoes", "oxford shoes"]
+    },
+    "otherItems": {
+      "Underwear": ["underwear", "undergarments", "innerwear"],
+      "Homewear": ["homewear", "loungewear", "pajamas"],
+      "Beachwear": ["beachwear", "swimwear", "beach clothing"],
+      "Co-ords": ["co-ord set", "matching set", "two piece set"],
+      "Hair Accessories": ["hair accessories", "hair clips", "headbands"],
+      "Eyewear": ["eyewear", "glasses", "sunglasses"],
+      "Ties": ["tie", "necktie", "bow tie"],
+      "Scarves": ["scarf", "neck scarf", "fashion scarf"],
+      "Mufflers": ["muffler", "winter muffler", "neck warmer"],
+      "Watches": ["watch", "wrist watch", "timepiece"],
+      "Gloves": ["gloves", "hand gloves", "winter gloves"],
+      "Belts": ["belt", "leather belt", "waist belt"],
+      "Socks": ["socks", "ankle socks", "crew socks"],
+      "Tights": ["tights", "stockings", "pantyhose"],
+      "Wallets & Purses": ["wallet", "purse", "handbag"],
+      "Other Accessories": ["accessories", "fashion accessories"],
+      "Traditional Wear": ["traditional wear", "ethnic wear", "cultural clothing"]
+    }
+  },
+
+  "specificAttributes": {
+    "neckline": {
+      "Round": ["round neckline", "crew neck", "circular neckline"],
+      "Scoop (U)": ["scoop neckline", "u-shaped neckline", "deep round neck"],
+      "Boat": ["boat neckline", "bateau neckline", "wide horizontal neckline"],
+      "V-Neck": ["v-neck", "v-shaped neckline", "pointed neckline"],
+      "Deep-V": ["deep v-neck", "plunging neckline", "low cut v-neck"],
+      "Square": ["square neckline", "straight across neckline"],
+      "Surplice": ["surplice neckline", "wrap front neckline", "crossover neckline"],
+      "Shirt Collar": ["shirt collar", "pointed collar", "button down collar"],
+      "Stand Collar": ["stand collar", "mandarin collar", "band collar"],
+      "Wide Collar": ["wide collar", "spread collar", "large collar"],
+      "Mockneck": ["mock neck", "mock turtleneck", "short turtleneck"],
+      "Turtleneck": ["turtleneck", "high neck", "roll neck"],
+      "Strapless": ["strapless", "no straps", "tube top neckline"],
+      "Thick Strap": ["thick strap", "wide strap top"],
+      "Thin Strap": ["thin strap", "spaghetti strap", "narrow strap"],
+      "Sweetheart": ["sweetheart neckline", "heart shaped neckline"],
+      "Off-Shoulder": ["off shoulder", "off the shoulder neckline", "bare shoulders"],
+      "Asymmetric": ["asymmetric neckline", "one shoulder", "uneven neckline"],
+      "Halter": ["halter neckline", "halter top", "neck tied top"],
+      "Illusion": ["illusion neckline", "sheer neckline", "mesh neckline"],
+      "Keyhole": ["keyhole neckline", "cutout neckline", "opening at neckline"],
+      "Suit Collar": ["suit collar", "notch lapel collar", "blazer collar"]
+    },
+    "sleeveLength": {
+      "Sleeveless": ["sleeveless", "no sleeves", "without sleeves"],
+      "Cap Sleeve": ["cap sleeve", "very short sleeve", "minimal sleeve"],
+      "Short Sleeve": ["short sleeve", "half sleeve", "above elbow sleeve"],
+      "3/4 Sleeve": ["three quarter sleeve", "3/4 length sleeve", "below elbow sleeve"],
+      "Long Sleeve": ["long sleeve", "full sleeve", "wrist length sleeve"]
+    },
+    "topLength": {
+      "Crop": ["crop length", "cropped top", "above waist length"],
+      "Waist": ["waist length", "ends at waist", "natural waist length"],
+      "Hip": ["hip length", "below waist", "covers hips"],
+      "Knee": ["knee length", "long tunic", "reaches knee"]
+    },
+    "fit": {
+      "Slim": ["slim fit", "fitted", "narrow cut"],
+      "Regular": ["regular fit", "standard fit", "classic fit"],
+      "Relaxed": ["relaxed fit", "loose fit", "comfortable fit"],
+      "Skinny": ["skinny fit", "tight fit", "very narrow"],
+      "Baggy": ["baggy fit", "oversized", "wide loose fit"]
+    },
+    "bottomLength": {
+      "Above Knee": ["above knee length", "short length", "mini length"],
+      "Knee Length": ["knee length", "hits at knee", "midi length"],
+      "Ankle": ["ankle length", "cropped at ankle", "above ankle"],
+      "Full": ["full length", "floor length", "covers ankle"]
+    },
+    "rise": {
+      "Low Rise": ["low rise", "sits below waist", "hip hugger"],
+      "Mid Rise": ["mid rise", "sits at natural waist", "regular rise"],
+      "High Rise": ["high rise", "sits above waist", "high waisted"]
+    },
+    "thickness": {
+      "Lightweight": ["lightweight", "thin fabric", "light material"],
+      "Midweight": ["midweight", "medium thickness", "moderate weight"],
+      "Heavy": ["heavy weight", "thick fabric", "warm heavy material"]
+    },
+    "footwearUsage": {
+      "Casual": ["casual footwear", "everyday shoes", "informal shoes"],
+      "Formal": ["formal footwear", "dress shoes", "professional shoes"],
+      "Sports": ["sports footwear", "athletic shoes", "training shoes"],
+      "Daily": ["daily wear footwear", "comfortable everyday shoes"]
+    }
+  },
+
+  "colors": {
+    "Black": ["black colored clothing", "dark black fabric"],
+    "White": ["white colored clothing", "bright white fabric"],
+    "Red": ["red colored clothing", "bright red fabric"],
+    "Blue": ["blue colored clothing", "navy blue fabric", "light blue fabric"],
+    "Green": ["green colored clothing", "dark green fabric", "light green fabric"],
+    "Yellow": ["yellow colored clothing", "bright yellow fabric"],
+    "Pink": ["pink colored clothing", "light pink fabric"],
+    "Purple": ["purple colored clothing", "violet fabric"],
+    "Orange": ["orange colored clothing", "bright orange fabric"],
+    "Brown": ["brown colored clothing", "tan fabric", "beige fabric"],
+    "Gray": ["gray colored clothing", "grey fabric"],
+    "Beige": ["beige colored clothing", "cream colored fabric"],
+    "Navy": ["navy blue colored clothing", "dark blue fabric"]
+  },
+
+  "patterns": {
+    "Solid": ["solid color clothing", "plain single color fabric"],
+    "Striped": ["striped pattern clothing", "horizontal stripes", "vertical stripes"],
+    "Plaid": ["plaid pattern clothing", "checkered fabric", "tartan pattern"],
+    "Floral": ["floral pattern clothing", "flower print fabric"],
+    "Polka Dot": ["polka dot pattern clothing", "dotted fabric"],
+    "Graphic": ["graphic print clothing", "printed design on fabric"],
+    "Abstract": ["abstract pattern clothing", "artistic print fabric"],
+    "Animal Print": ["animal print clothing", "leopard print", "zebra print"]
+  },
+
+  "materials": {
+    "Cotton": ["cotton fabric clothing", "soft cotton material"],
+    "Denim": ["denim fabric clothing", "jeans material"],
+    "Leather": ["leather clothing", "genuine leather material"],
+    "Wool": ["wool fabric clothing", "woolen material"],
+    "Silk": ["silk fabric clothing", "silky smooth material"],
+    "Polyester": ["polyester fabric clothing", "synthetic material"],
+    "Linen": ["linen fabric clothing", "light breathable linen"],
+    "Velvet": ["velvet fabric clothing", "soft velvet material"],
+    "Knit": ["knitted clothing", "knit fabric material"],
+    "Plastic": ["plastic material clothing", "solid plastic", "soft plastic", "shiny plastic finish"],
+    "Metal": ["metal material clothing", "metallic finish", "shiny metal accent", "metal hardware on clothing"],
+    "Rubber": ["rubber material clothing", "rubberized fabric", "flexible rubber", "rubber trim on clothing"]
+  },
+
+  "seasons": {
+    "Summer": ["lightweight summer clothing", "breathable warm weather clothes"],
+    "Winter": ["heavy winter clothing", "warm cold weather clothes", "insulated clothing"],
+    "Spring": ["light spring clothing", "mild weather clothes"],
+    "Fall": ["autumn clothing", "layered fall clothes"],
+    "All Season": ["versatile all season clothing", "year round wearable"]
+  },
+
+  "occasions": {
+    "Casual": ["casual everyday clothing", "relaxed informal wear"],
+    "Formal": ["formal clothing", "business professional attire", "dressy clothes"],
+    "Sports": ["athletic sportswear", "gym workout clothing", "activewear"],
+    "Party": ["party wear clothing", "evening occasion dress"],
+    "Work": ["office work clothing", "business casual attire"]
+  }
+}
