@@ -1,0 +1,35 @@
+{
+    "color": [
+      "White", "Ivory", "Beige",
+      "Light Gray", "Dark Gray", "Black",
+      "Light Yellow", "Yellow", "Turmeric",
+      "Orange", "Coral", "Red", "Pink", "Hot Pink",
+      "Light Green", "Green", "Olive", "Dark Olive",
+      "Teal", "Khaki", "Cyan", "Sky Blue",
+      "Blue", "Navy", "Lavender", "Purple",
+      "Burgundy", "Camel", "Brown", "Dark Brown",
+      "Magenta",
+      "ETC"
+    ],
+  
+    "season": ["Spring", "Summer", "Fall", "Winter"],
+  
+    "material": [
+      "Cotton", "Polyester", "Linen", "Denim",
+      "Wool", "Nylon", "Leather", "Synthetic",
+      "ETC"
+    ],
+  
+    "pattern": [
+      "Solid", "Striped", "Checked",
+      "Graphic", "Printed", "Floral",
+      "ETC"
+    ],
+  
+    "occasion": [
+      "Daily", "Casual", "Formal",
+      "Sports", "Party",
+      "ETC"
+    ]
+  }
+  

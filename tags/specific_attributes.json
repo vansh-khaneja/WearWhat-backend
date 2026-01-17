@@ -1,0 +1,65 @@
+{
+    "upperWear": {
+      "neckline": [
+        "Round",
+        "Scoop (U)",
+        "Boat",
+        "V-Neck",
+        "Deep-V",
+        "Square",
+        "Surplice",
+        "Shirt Collar",
+        "Stand Collar",
+        "Wide Collar",
+        "Mockneck",
+        "Turtleneck",
+        "Strapless",
+        "Thick Strap",
+        "Thin Strap",
+        "Sweetheart",
+        "Off-Shoulder",
+        "Asymmetric",
+        "Halter",
+        "Illusion",
+        "Keyhole",
+        "Suit Collar",
+        "ETC"
+      ],
+  
+      "sleeveLength": [
+        "Sleeveless",
+        "Cap Sleeve",
+        "Short Sleeve",
+        "3/4 Sleeve",
+        "Long Sleeve",
+        "ETC"
+      ],
+  
+      "topLength": [
+        "Crop",
+        "Waist",
+        "Hip",
+        "Knee",
+        "ETC"
+      ]
+    },
+  
+    "bottomWear": {
+      "fit": ["Slim", "Regular", "Relaxed", "Skinny", "Baggy", "ETC"],
+      "length": ["Above Knee", "Knee Length", "Ankle", "Full", "ETC"],
+      "rise": ["Low Rise", "Mid Rise", "High Rise", "ETC"]
+    },
+  
+    "outerWear": {
+      "thickness": ["Lightweight", "Midweight", "Heavy", "ETC"]
+    },
+  
+    "footwear": {
+      "usageType": ["Casual", "Formal", "Sports", "Daily", "ETC"]
+    },
+  
+    "otherItems": {
+      "attributes": []
+    }
+  }
+  
