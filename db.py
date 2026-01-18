@@ -88,6 +88,27 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_wardrobe_tags_user_id ON wardrobe_tags(user_id)
     """)
 
+    # Create calendar_outfits table - stores outfit recommendations by date
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS calendar_outfits (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            outfit_date DATE NOT NULL,
+            combined_image_url TEXT NOT NULL,
+            prompt TEXT,
+            temperature FLOAT,
+            selected_categories JSONB DEFAULT '[]',
+            items JSONB DEFAULT '[]',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            UNIQUE(user_id, outfit_date)
+        )
+    """)
+
+    # Create index on user_id and outfit_date for calendar_outfits
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_calendar_outfits_user_date ON calendar_outfits(user_id, outfit_date)
+    """)
+
     conn.commit()
     cur.close()
     conn.close()
