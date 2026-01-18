@@ -119,6 +119,14 @@
       "Socks": ["socks", "ankle socks", "crew socks"],
       "Tights": ["tights", "stockings", "pantyhose"],
       "Wallets & Purses": ["wallet", "purse", "handbag"],
+      "Umbrella": ["umbrella", "rain umbrella", "folding umbrella"],
+      "Baseball Cap": ["baseball cap", "sports cap", "snapback cap"],
+      "Beanie": ["beanie", "knit cap", "winter beanie"],
+      "Fedora": ["fedora hat", "classic fedora", "wide brim fedora"],
+      "Bucket Hat": ["bucket hat", "fisherman hat", "sun bucket hat"],
+      "Sun Hat": ["sun hat", "wide brim sun hat", "beach hat"],
+      "Beret": ["beret", "french beret", "wool beret"],
+      "Visor": ["visor cap", "sun visor", "sports visor"],
       "Other Accessories": ["accessories", "fashion accessories"],
       "Traditional Wear": ["traditional wear", "ethnic wear", "cultural clothing"]
     }

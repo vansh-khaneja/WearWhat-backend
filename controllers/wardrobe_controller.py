@@ -3,6 +3,7 @@ from fastapi import UploadFile
 
 from services.cloudinary_service import upload_image
 from services.clip_service import generate_tags
+from services.wardrobe_tags_service import WardrobeTagsService
 from dependencies.auth import CurrentUser
 from repositories.wardrobe_repository import WardrobeRepository
 
@@ -20,6 +21,14 @@ def upload_wardrobe_items(files: List[UploadFile], user: CurrentUser):
             category_group=tags["categoryGroup"],
             category=tags["category"],
             attributes=tags["attributes"]
+        )
+
+        # Update the wardrobe tags tree with item ID
+        WardrobeTagsService.add_item_to_tag(
+            user_id=user.id,
+            category_group=tags["categoryGroup"],
+            category=tags["category"],
+            item_id=str(item["id"])
         )
 
         results.append({
@@ -68,5 +77,8 @@ def delete_wardrobe_item(item_id: str, user: CurrentUser):
 
     if not deleted:
         return {"success": False, "message": "Item not found or not authorized"}
+
+    # Remove item from wardrobe tags tree
+    WardrobeTagsService.remove_item(user.id, item_id)
 
     return {"success": True, "message": "Item deleted"}

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import wardrobe, auth, saved_image
+from routers import wardrobe, auth, saved_image, wardrobe_tags
 from db import init_db
 
 # Create tables
@@ -20,3 +20,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(wardrobe.router)
 app.include_router(saved_image.router)
+app.include_router(wardrobe_tags.router)

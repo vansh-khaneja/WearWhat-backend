@@ -72,6 +72,22 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_saved_images_user_id ON saved_images(user_id)
     """)
 
+    # Create wardrobe_tags table - stores the tags tree per user
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS wardrobe_tags (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            tags_by_category JSONB DEFAULT '{}',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        )
+    """)
+
+    # Create index on user_id for wardrobe_tags
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_wardrobe_tags_user_id ON wardrobe_tags(user_id)
+    """)
+
     conn.commit()
     cur.close()
     conn.close()
