@@ -14,3 +14,10 @@ def upload_image(file):
         folder="wearwhat/wardrobe"
     )
     return result["secure_url"]
+
+def upload_profile_image(file):
+    result = cloudinary.uploader.upload(
+        file,
+        folder="wearwhat/profiles"
+    )
+    return result["secure_url"]

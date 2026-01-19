@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Depends, UploadFile, File
 
-from models.auth import SignupRequest, LoginRequest
+from models.auth import SignupRequest, LoginRequest, UpdateUserRequest
+from services.cloudinary_service import upload_profile_image
 from services.auth_service import (
     create_user,
     get_user_by_email,
     authenticate_user,
     create_access_token
 )
+from dependencies.auth import get_current_user, CurrentUser
+from repositories.user_repository import UserRepository
 
 router = APIRouter(
     prefix="/auth",
@@ -80,3 +83,72 @@ def login(request: LoginRequest, response: Response):
 def logout(response: Response):
     response.delete_cookie(key="access_token")
     return {"success": True, "message": "Logged out successfully"}
+
+@router.get("/me")
+def get_me(user: CurrentUser = Depends(get_current_user)):
+    user_info = UserRepository.get_full_info(user.id)
+    if not user_info:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "success": True,
+        "user": {
+            "id": str(user_info["id"]),
+            "email": user_info["email"],
+            "first_name": user_info["first_name"],
+            "last_name": user_info["last_name"],
+            "profile_image_url": user_info["profile_image_url"],
+            "created_at": user_info["created_at"].isoformat() if user_info["created_at"] else None,
+            "updated_at": user_info["updated_at"].isoformat() if user_info["updated_at"] else None
+        }
+    }
+
+@router.put("/me")
+def update_me(request: UpdateUserRequest, user: CurrentUser = Depends(get_current_user)):
+    updated_user = UserRepository.update(
+        user_id=user.id,
+        first_name=request.first_name,
+        last_name=request.last_name
+    )
+
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "success": True,
+        "user": {
+            "id": str(updated_user["id"]),
+            "email": updated_user["email"],
+            "first_name": updated_user["first_name"],
+            "last_name": updated_user["last_name"],
+            "profile_image_url": updated_user["profile_image_url"],
+            "created_at": updated_user["created_at"].isoformat() if updated_user["created_at"] else None,
+            "updated_at": updated_user["updated_at"].isoformat() if updated_user["updated_at"] else None
+        }
+    }
+
+@router.post("/me/profile-image")
+def upload_profile_image_endpoint(file: UploadFile = File(...), user: CurrentUser = Depends(get_current_user)):
+    image_url = upload_profile_image(file.file)
+
+    updated_user = UserRepository.update(
+        user_id=user.id,
+        profile_image_url=image_url
+    )
+
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "success": True,
+        "profile_image_url": image_url,
+        "user": {
+            "id": str(updated_user["id"]),
+            "email": updated_user["email"],
+            "first_name": updated_user["first_name"],
+            "last_name": updated_user["last_name"],
+            "profile_image_url": updated_user["profile_image_url"],
+            "created_at": updated_user["created_at"].isoformat() if updated_user["created_at"] else None,
+            "updated_at": updated_user["updated_at"].isoformat() if updated_user["updated_at"] else None
+        }
+    }

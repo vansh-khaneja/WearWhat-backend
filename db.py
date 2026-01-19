@@ -16,9 +16,21 @@ def init_db():
             email VARCHAR(255) UNIQUE NOT NULL,
             first_name VARCHAR(100) NOT NULL,
             last_name VARCHAR(100) NOT NULL,
+            profile_image_url TEXT,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         )
+    """)
+
+    # Add profile_image_url column if it doesn't exist (for existing databases)
+    cur.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                          WHERE table_name='users' AND column_name='profile_image_url') THEN
+                ALTER TABLE users ADD COLUMN profile_image_url TEXT;
+            END IF;
+        END $$;
     """)
 
     # Create user_passwords table (separate for security)
@@ -107,6 +119,57 @@ def init_db():
     # Create index on user_id and outfit_date for calendar_outfits
     cur.execute("""
         CREATE INDEX IF NOT EXISTS idx_calendar_outfits_user_date ON calendar_outfits(user_id, outfit_date)
+    """)
+
+    # Create posts table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS posts (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            image_url TEXT NOT NULL,
+            text TEXT,
+            likes_count INTEGER DEFAULT 0,
+            comments_count INTEGER DEFAULT 0,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        )
+    """)
+
+    # Create indexes for posts - user_id for filtering by user, created_at for feed ordering
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id)
+    """)
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC)
+    """)
+
+    # Create post_comments table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS post_comments (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+            user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            user_name VARCHAR(200) NOT NULL,
+            user_profile_image TEXT,
+            text TEXT NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        )
+    """)
+
+    # Add user_profile_image column to post_comments if it doesn't exist
+    cur.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                          WHERE table_name='post_comments' AND column_name='user_profile_image') THEN
+                ALTER TABLE post_comments ADD COLUMN user_profile_image TEXT;
+            END IF;
+        END $$;
+    """)
+
+    # Create index for comments by post
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_post_comments_post_id ON post_comments(post_id)
     """)
 
     conn.commit()

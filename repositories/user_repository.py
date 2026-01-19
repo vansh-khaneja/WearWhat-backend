@@ -50,7 +50,7 @@ class UserRepository:
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, email, first_name, last_name, created_at FROM users WHERE id = %s",
+            "SELECT id, email, first_name, last_name, profile_image_url, created_at FROM users WHERE id = %s",
             (str(user_id),)
         )
         user = cur.fetchone()
@@ -75,3 +75,59 @@ class UserRepository:
         cur.close()
         conn.close()
         return dict(result) if result else None
+
+    @staticmethod
+    def get_full_info(user_id: UUID) -> Optional[dict]:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT id, email, first_name, last_name, profile_image_url, created_at, updated_at
+            FROM users WHERE id = %s
+            """,
+            (str(user_id),)
+        )
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+        return dict(user) if user else None
+
+    @staticmethod
+    def update(user_id: UUID, first_name: str = None, last_name: str = None, profile_image_url: str = None) -> Optional[dict]:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        # Build dynamic update query
+        updates = []
+        values = []
+
+        if first_name is not None:
+            updates.append("first_name = %s")
+            values.append(first_name)
+        if last_name is not None:
+            updates.append("last_name = %s")
+            values.append(last_name)
+        if profile_image_url is not None:
+            updates.append("profile_image_url = %s")
+            values.append(profile_image_url)
+
+        if not updates:
+            cur.close()
+            conn.close()
+            return UserRepository.get_full_info(user_id)
+
+        updates.append("updated_at = NOW()")
+        values.append(str(user_id))
+
+        query = f"""
+            UPDATE users SET {', '.join(updates)}
+            WHERE id = %s
+            RETURNING id, email, first_name, last_name, profile_image_url, created_at, updated_at
+        """
+
+        cur.execute(query, values)
+        user = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return dict(user) if user else None
