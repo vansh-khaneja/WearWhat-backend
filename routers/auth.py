@@ -86,7 +86,8 @@ def logout(response: Response):
 
 @router.get("/me")
 def get_me(user: CurrentUser = Depends(get_current_user)):
-    user_info = UserRepository.get_full_info(user.id)
+    from uuid import UUID
+    user_info = UserRepository.get_full_info(UUID(user.id))
     if not user_info:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -105,8 +106,9 @@ def get_me(user: CurrentUser = Depends(get_current_user)):
 
 @router.put("/me")
 def update_me(request: UpdateUserRequest, user: CurrentUser = Depends(get_current_user)):
+    from uuid import UUID
     updated_user = UserRepository.update(
-        user_id=user.id,
+        user_id=UUID(user.id),
         first_name=request.first_name,
         last_name=request.last_name
     )
@@ -129,10 +131,11 @@ def update_me(request: UpdateUserRequest, user: CurrentUser = Depends(get_curren
 
 @router.post("/me/profile-image")
 def upload_profile_image_endpoint(file: UploadFile = File(...), user: CurrentUser = Depends(get_current_user)):
+    from uuid import UUID
     image_url = upload_profile_image(file.file)
 
     updated_user = UserRepository.update(
-        user_id=user.id,
+        user_id=UUID(user.id),
         profile_image_url=image_url
     )
 

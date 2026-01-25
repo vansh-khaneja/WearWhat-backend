@@ -1,36 +1,115 @@
+import uuid
 from typing import Optional
 from uuid import UUID
-from fastapi import HTTPException, Request
 
-from services.auth_service import decode_token, get_user_by_id
+import requests
+from fastapi import HTTPException, Request
+from jose import jwt
+
+from config import CLERK_ISSUER
+from services.auth_service import get_user_by_id
+
+# Clerk JWKS URL
+JWKS_URL = f"{CLERK_ISSUER}/.well-known/jwks.json"
+
+# Cache for JWKS (public keys)
+_jwks_cache = None
+
+
+def get_jwks():
+    """Fetch Clerk public keys (with caching)."""
+    global _jwks_cache
+    if _jwks_cache is None:
+        try:
+            response = requests.get(JWKS_URL)
+            response.raise_for_status()
+            _jwks_cache = response.json()
+        except Exception as e:
+            print(f"Error fetching JWKS: {e}")
+            return None
+    return _jwks_cache
+
+
+def verify_clerk_jwt(token: str) -> Optional[dict]:
+    """
+    Verify a Clerk JWT token and return the payload.
+    Returns None if token is invalid.
+    """
+    try:
+        jwks = get_jwks()
+        if not jwks:
+            return None
+
+        payload = jwt.decode(
+            token,
+            jwks,
+            algorithms=["RS256"],
+            issuer=CLERK_ISSUER,
+            options={"verify_aud": False},
+        )
+        return payload
+    except Exception as e:
+        print(f"Token invalid: {e}")
+        return None
+
+
+def clerk_id_to_uuid(clerk_user_id: str) -> str:
+    """
+    Deterministically convert a Clerk user ID into a UUID v5.
+    Same input will always produce the same UUID.
+    """
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, clerk_user_id))
 
 class CurrentUser:
-    def __init__(self, id: UUID, email: str, first_name: str, last_name: str, profile_image_url: Optional[str] = None):
-        self.id = id
+    def __init__(self, id: str, clerk_id: str, email: str, first_name: str, last_name: str, profile_image_url: Optional[str] = None):
+        # id is the UUID (converted from Clerk ID) used in database
+        # clerk_id is the original Clerk user ID string
+        self.id = id  # UUID string for database queries
+        self.clerk_id = clerk_id  # Original Clerk ID
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
         self.profile_image_url = profile_image_url
+    
+    def get_uuid(self) -> UUID:
+        """Get UUID object for database operations."""
+        return UUID(self.id)
 
 def get_current_user(request: Request) -> CurrentUser:
-    token = request.cookies.get("access_token")
+    # Try to get token from Authorization header first (Clerk style)
+    auth_header = request.headers.get("Authorization")
+    token = None
+    
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+    else:
+        # Fallback to cookie (legacy)
+        token = request.cookies.get("access_token")
+    
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    payload = decode_token(token)
+    # Verify Clerk JWT token
+    payload = verify_clerk_jwt(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    user_id = payload.get("sub")
-    if not user_id:
+    # Extract Clerk user ID from token
+    clerk_user_id = payload.get("sub")
+    if not clerk_user_id:
         raise HTTPException(status_code=401, detail="Invalid token payload")
 
-    user = get_user_by_id(UUID(user_id))
+    # Convert Clerk ID to UUID for database lookup
+    user_uuid = clerk_id_to_uuid(clerk_user_id)
+    
+    # Get user from database using UUID
+    user = get_user_by_id(UUID(user_uuid))
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
 
     return CurrentUser(
-        id=user["id"],
+        id=user["id"],  # UUID string from database
+        clerk_id=clerk_user_id,  # Original Clerk ID
         email=user["email"],
         first_name=user["first_name"],
         last_name=user["last_name"],
@@ -39,24 +118,40 @@ def get_current_user(request: Request) -> CurrentUser:
 
 def get_optional_user(request: Request) -> Optional[CurrentUser]:
     """Returns current user if authenticated, None otherwise. Does not raise errors."""
-    token = request.cookies.get("access_token")
+    # Try to get token from Authorization header first (Clerk style)
+    auth_header = request.headers.get("Authorization")
+    token = None
+    
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+    else:
+        # Fallback to cookie (legacy)
+        token = request.cookies.get("access_token")
+    
     if not token:
         return None
 
-    payload = decode_token(token)
+    # Verify Clerk JWT token
+    payload = verify_clerk_jwt(token)
     if not payload:
         return None
 
-    user_id = payload.get("sub")
-    if not user_id:
+    # Extract Clerk user ID from token
+    clerk_user_id = payload.get("sub")
+    if not clerk_user_id:
         return None
 
-    user = get_user_by_id(UUID(user_id))
+    # Convert Clerk ID to UUID for database lookup
+    user_uuid = clerk_id_to_uuid(clerk_user_id)
+    
+    # Get user from database using UUID
+    user = get_user_by_id(UUID(user_uuid))
     if not user:
         return None
 
     return CurrentUser(
-        id=user["id"],
+        id=user["id"],  # UUID string from database
+        clerk_id=clerk_user_id,  # Original Clerk ID
         email=user["email"],
         first_name=user["first_name"],
         last_name=user["last_name"],

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
+from uuid import UUID
 
 from repositories.post_repository import PostRepository
 from dependencies.auth import get_current_user, CurrentUser
@@ -24,7 +25,7 @@ class AddCommentRequest(BaseModel):
 def create_post(request: CreatePostRequest, user: CurrentUser = Depends(get_current_user)):
     """Create a new post."""
     post = PostRepository.create(
-        user_id=user.id,
+        user_id=UUID(user.id),
         image_url=request.image_url,
         text=request.text
     )
@@ -81,7 +82,7 @@ def get_my_posts(
     user: CurrentUser = Depends(get_current_user)
 ):
     """Get current user's posts."""
-    posts = PostRepository.get_by_user_id(user.id, limit=limit, offset=offset)
+    posts = PostRepository.get_by_user_id(UUID(user.id), limit=limit, offset=offset)
 
     return {
         "success": True,
@@ -106,7 +107,7 @@ def get_my_posts(
 @router.delete("/{post_id}")
 def delete_post(post_id: str, user: CurrentUser = Depends(get_current_user)):
     """Delete a post (only own posts)."""
-    deleted = PostRepository.delete(post_id, user.id)
+    deleted = PostRepository.delete(post_id, UUID(user.id))
     if not deleted:
         raise HTTPException(status_code=404, detail="Post not found or not authorized")
 
@@ -163,7 +164,7 @@ def add_comment(
     user_name = f"{user.first_name} {user.last_name}"
     comment = PostRepository.add_comment(
         post_id=post_id,
-        user_id=user.id,
+        user_id=UUID(user.id),
         user_name=user_name,
         text=request.text,
         user_profile_image=user.profile_image_url
@@ -185,7 +186,7 @@ def add_comment(
 @router.delete("/comments/{comment_id}")
 def delete_comment(comment_id: str, user: CurrentUser = Depends(get_current_user)):
     """Delete a comment (only own comments)."""
-    deleted = PostRepository.delete_comment(comment_id, user.id)
+    deleted = PostRepository.delete_comment(comment_id, UUID(user.id))
     if not deleted:
         raise HTTPException(status_code=404, detail="Comment not found or not authorized")
 

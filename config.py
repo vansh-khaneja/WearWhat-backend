@@ -11,10 +11,13 @@ CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
 # Database
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/wearwhat")
 
-# JWT
+# JWT (Legacy - kept for backward compatibility)
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
+
+# Clerk Authentication
+CLERK_ISSUER = os.getenv("CLERK_ISSUER", "https://literate-wahoo-99.clerk.accounts.dev")
 
 # OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
