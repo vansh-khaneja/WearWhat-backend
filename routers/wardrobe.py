@@ -1,6 +1,5 @@
-from typing import List
 from fastapi import APIRouter, UploadFile, File, Depends
-from controllers.wardrobe_controller import upload_wardrobe_items, get_user_wardrobe, delete_wardrobe_item
+from controllers.wardrobe_controller import upload_wardrobe_item, get_user_wardrobe, delete_wardrobe_item
 from dependencies.auth import get_current_user, CurrentUser
 
 router = APIRouter(
@@ -9,11 +8,11 @@ router = APIRouter(
 )
 
 @router.post("/upload")
-def upload_images(
-    files: List[UploadFile] = File(...),
+def upload_image(
+    file: UploadFile = File(...),
     user: CurrentUser = Depends(get_current_user)
 ):
-    return upload_wardrobe_items(files, user)
+    return upload_wardrobe_item(file, user)
 
 @router.get("/")
 def get_wardrobe(user: CurrentUser = Depends(get_current_user)):

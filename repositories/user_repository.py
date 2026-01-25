@@ -33,17 +33,22 @@ class UserRepository:
         return user
 
     @staticmethod
-    def create_clerk_user(user_id: UUID, email: str, first_name: str, last_name: str) -> dict:
-        """Create a user from Clerk (no password needed)."""
+    def create_clerk_user(user_id: UUID, email: str, first_name: str, last_name: str, profile_image_url: str = None) -> dict:
+        """Create a user from Clerk (no password needed). Uses UPSERT to handle existing users."""
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(
             """
-            INSERT INTO users (id, email, first_name, last_name)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO users (id, email, first_name, last_name, profile_image_url)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (id) DO UPDATE SET
+                email = COALESCE(NULLIF(EXCLUDED.email, ''), users.email),
+                first_name = COALESCE(NULLIF(EXCLUDED.first_name, ''), users.first_name),
+                last_name = COALESCE(NULLIF(EXCLUDED.last_name, ''), users.last_name),
+                profile_image_url = COALESCE(NULLIF(EXCLUDED.profile_image_url, ''), users.profile_image_url)
             RETURNING id, email, first_name, last_name, profile_image_url, created_at
             """,
-            (str(user_id), email, first_name, last_name)
+            (str(user_id), email, first_name, last_name, profile_image_url or '')
         )
         user = dict(cur.fetchone())
         conn.commit()

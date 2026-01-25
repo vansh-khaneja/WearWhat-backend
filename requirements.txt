@@ -13,3 +13,5 @@ git+https://github.com/openai/CLIP.git
 pillow
 requests
 openai
+rembg
+onnxruntime

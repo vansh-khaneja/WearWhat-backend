@@ -108,14 +108,17 @@ def get_current_user(request: Request) -> CurrentUser:
 
     # Auto-create user if they don't exist (first Clerk login)
     if not user:
-        email = payload.get("email", "")
-        first_name = payload.get("first_name", "")
-        last_name = payload.get("last_name", "")
+        # Extract user info from JWT claims (matching our Clerk JWT template)
+        email = payload.get("email") or ""
+        first_name = payload.get("first_name") or ""
+        last_name = payload.get("last_name") or ""
+        image_url = payload.get("image_url") or ""
         user = UserRepository.create_clerk_user(
             user_id=UUID(user_uuid),
             email=email,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            profile_image_url=image_url
         )
 
     return CurrentUser(
@@ -160,15 +163,19 @@ def get_optional_user(request: Request) -> Optional[CurrentUser]:
 
     # Auto-create user if they don't exist (first Clerk login)
     if not user:
-        email = payload.get("email", "")
-        first_name = payload.get("first_name", "")
-        last_name = payload.get("last_name", "")
+        # Extract user info from JWT claims (matching our Clerk JWT template)
+        email = payload.get("email") or ""
+        first_name = payload.get("first_name") or ""
+        last_name = payload.get("last_name") or ""
+        image_url = payload.get("image_url") or ""
+        print(f"Creating user with email: {email}, first_name: {first_name}, last_name: {last_name}, image_url: {image_url}")
         try:
             user = UserRepository.create_clerk_user(
                 user_id=UUID(user_uuid),
                 email=email,
                 first_name=first_name,
-                last_name=last_name
+                last_name=last_name,
+                profile_image_url=image_url
             )
         except Exception:
             return None
