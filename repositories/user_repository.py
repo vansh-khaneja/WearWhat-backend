@@ -33,6 +33,25 @@ class UserRepository:
         return user
 
     @staticmethod
+    def create_clerk_user(user_id: UUID, email: str, first_name: str, last_name: str) -> dict:
+        """Create a user from Clerk (no password needed)."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO users (id, email, first_name, last_name)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id, email, first_name, last_name, profile_image_url, created_at
+            """,
+            (str(user_id), email, first_name, last_name)
+        )
+        user = dict(cur.fetchone())
+        conn.commit()
+        cur.close()
+        conn.close()
+        return user
+
+    @staticmethod
     def get_by_email(email: str) -> Optional[dict]:
         conn = get_connection()
         cur = conn.cursor()

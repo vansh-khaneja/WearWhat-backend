@@ -8,6 +8,7 @@ from jose import jwt
 
 from config import CLERK_ISSUER
 from services.auth_service import get_user_by_id
+from repositories.user_repository import UserRepository
 
 # Clerk JWKS URL
 JWKS_URL = f"{CLERK_ISSUER}/.well-known/jwks.json"
@@ -104,11 +105,21 @@ def get_current_user(request: Request) -> CurrentUser:
     
     # Get user from database using UUID
     user = get_user_by_id(UUID(user_uuid))
+
+    # Auto-create user if they don't exist (first Clerk login)
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        email = payload.get("email", "")
+        first_name = payload.get("first_name", "")
+        last_name = payload.get("last_name", "")
+        user = UserRepository.create_clerk_user(
+            user_id=UUID(user_uuid),
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
 
     return CurrentUser(
-        id=user["id"],  # UUID string from database
+        id=str(user["id"]),  # UUID string from database
         clerk_id=clerk_user_id,  # Original Clerk ID
         email=user["email"],
         first_name=user["first_name"],
@@ -146,11 +157,24 @@ def get_optional_user(request: Request) -> Optional[CurrentUser]:
     
     # Get user from database using UUID
     user = get_user_by_id(UUID(user_uuid))
+
+    # Auto-create user if they don't exist (first Clerk login)
     if not user:
-        return None
+        email = payload.get("email", "")
+        first_name = payload.get("first_name", "")
+        last_name = payload.get("last_name", "")
+        try:
+            user = UserRepository.create_clerk_user(
+                user_id=UUID(user_uuid),
+                email=email,
+                first_name=first_name,
+                last_name=last_name
+            )
+        except Exception:
+            return None
 
     return CurrentUser(
-        id=user["id"],  # UUID string from database
+        id=str(user["id"]),  # UUID string from database
         clerk_id=clerk_user_id,  # Original Clerk ID
         email=user["email"],
         first_name=user["first_name"],
