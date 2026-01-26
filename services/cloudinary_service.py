@@ -8,10 +8,10 @@ cloudinary.config(
     api_secret=CLOUDINARY_API_SECRET
 )
 
-def upload_image(file):
+def upload_image(file, folder: str = "wearwhat/wardrobe"):
     result = cloudinary.uploader.upload(
         file,
-        folder="wearwhat/wardrobe"
+        folder=folder
     )
     return result["secure_url"]
 

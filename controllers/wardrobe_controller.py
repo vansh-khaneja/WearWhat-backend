@@ -5,6 +5,7 @@ from services.cloudinary_service import upload_image
 from services.clip_service import generate_tags
 from services.wardrobe_tags_service import WardrobeTagsService
 from services.background_removal_service import remove_background
+from services.qdrant_service import store_embedding, delete_embedding
 from dependencies.auth import CurrentUser
 from repositories.wardrobe_repository import WardrobeRepository
 
@@ -32,6 +33,17 @@ def upload_wardrobe_item(file: UploadFile, user: CurrentUser):
         category_group=tags["categoryGroup"],
         category=tags["category"],
         item_id=str(item["id"])
+    )
+
+    # Store embedding in Qdrant for similarity search
+    store_embedding(
+        item_id=str(item["id"]),
+        user_id=str(user.id),
+        embedding=tags["embedding"],
+        category_group=tags["categoryGroup"],
+        category=tags["category"],
+        attributes=tags["attributes"],
+        image_url=image_url
     )
 
     return {
@@ -87,5 +99,8 @@ def delete_wardrobe_item(item_id: str, user: CurrentUser):
 
     # Remove item from wardrobe tags tree
     WardrobeTagsService.remove_item(UUID(user.id), item_id)
+
+    # Remove embedding from Qdrant
+    delete_embedding(item_id)
 
     return {"success": True, "message": "Item deleted"}

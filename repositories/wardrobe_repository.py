@@ -70,3 +70,25 @@ class WardrobeRepository:
         cur.close()
         conn.close()
         return deleted is not None
+
+    @staticmethod
+    def update_image(item_id: UUID, user_id: UUID, image_url: str) -> Optional[dict]:
+        """Update the image_url of a wardrobe item."""
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute(
+            """
+            UPDATE wardrobe_items
+            SET image_url = %s
+            WHERE id = %s AND user_id = %s
+            RETURNING id, user_id, image_url, category_group, category, attributes, created_at
+            """,
+            (image_url, str(item_id), str(user_id))
+        )
+        item = cur.fetchone()
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return dict(item) if item else None

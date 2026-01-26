@@ -15,3 +15,6 @@ requests
 openai
 rembg
 onnxruntime
+qdrant-client
+modal
+google-genai

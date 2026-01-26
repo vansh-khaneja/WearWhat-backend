@@ -8,6 +8,7 @@ from config import OPENAI_API_KEY
 from repositories.wardrobe_tags_repository import WardrobeTagsRepository
 from repositories.wardrobe_repository import WardrobeRepository
 from services.image_combiner_service import ImageCombinerService
+from services.weather_service import WeatherService
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -34,11 +35,26 @@ class RecommendationService:
         return categories
 
     @staticmethod
-    def get_recommendation(user_id: UUID, prompt: str) -> Dict:
+    def get_recommendation(
+        user_id: UUID,
+        prompt: str,
+        lat: Optional[float] = None,
+        lon: Optional[float] = None,
+        city: Optional[str] = None,
+        date: Optional[str] = None
+    ) -> Dict:
         """
         Use OpenAI to decide which categories to pick based on the prompt,
         then return one random item from each selected category.
+        Optionally includes weather data if location is provided.
         """
+        # Get weather data if location is provided
+        weather_data = None
+        if lat is not None and lon is not None:
+            weather_data = WeatherService.get_weather_forecast(lat, lon, date)
+        elif city:
+            weather_data = WeatherService.get_weather_by_city(city, target_date=date)
+
         # Get user's available categories
         available_categories = RecommendationService.get_user_available_categories(user_id)
 
@@ -46,13 +62,27 @@ class RecommendationService:
             return {
                 "success": False,
                 "message": "No items in wardrobe yet",
-                "items": []
+                "items": [],
+                "weather": weather_data
             }
 
-        # Ask OpenAI to select appropriate categories
+        # Build system prompt, including weather context if available
+        weather_context = ""
+        if weather_data and weather_data.get("success"):
+            avg_temp = weather_data["forecast"]["avg_temp"]
+            condition = weather_data["forecast"]["dominant_condition"]
+            suggestion = weather_data.get("suggestion", "")
+            weather_context = f"""
+Current weather context:
+- Average temperature: {avg_temp}°C
+- Weather condition: {condition}
+- Suggested season clothing: {suggestion}
+
+Consider the weather when selecting outfit categories. Choose weather-appropriate clothing."""
+
         system_prompt = f"""You are a fashion assistant. The user has the following clothing categories in their wardrobe:
 {', '.join(available_categories)}
-
+{weather_context}
 Based on the user's request, select the most appropriate categories for an outfit.
 Only select from the available categories listed above.
 Select categories that would make a complete, appropriate outfit for the occasion."""
@@ -110,5 +140,6 @@ Select categories that would make a complete, appropriate outfit for the occasio
             "reasoning": recommendation.reasoning,
             "selected_categories": valid_categories,
             "combined_image_url": combined_image_url,
-            "items": result_items
+            "items": result_items,
+            "weather": weather_data
         }

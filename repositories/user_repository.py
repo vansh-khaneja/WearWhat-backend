@@ -155,3 +155,59 @@ class UserRepository:
         cur.close()
         conn.close()
         return dict(user) if user else None
+
+    @staticmethod
+    def get_tokens(user_id: UUID) -> int:
+        """Get current token count for a user."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT tokens FROM users WHERE id = %s",
+            (str(user_id),)
+        )
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        return result["tokens"] if result else 0
+
+    @staticmethod
+    def deduct_token(user_id: UUID) -> dict:
+        """Deduct one token from user. Returns success status and remaining tokens."""
+        conn = get_connection()
+        cur = conn.cursor()
+
+        # Check current tokens
+        cur.execute(
+            "SELECT tokens FROM users WHERE id = %s",
+            (str(user_id),)
+        )
+        result = cur.fetchone()
+
+        if not result:
+            cur.close()
+            conn.close()
+            return {"success": False, "message": "User not found", "tokens": 0}
+
+        if result["tokens"] <= 0:
+            cur.close()
+            conn.close()
+            return {"success": False, "message": "No tokens available", "tokens": 0}
+
+        # Deduct one token
+        cur.execute(
+            """
+            UPDATE users SET tokens = tokens - 1
+            WHERE id = %s AND tokens > 0
+            RETURNING tokens
+            """,
+            (str(user_id),)
+        )
+        updated = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        if updated:
+            return {"success": True, "tokens": updated["tokens"]}
+        else:
+            return {"success": False, "message": "Failed to deduct token", "tokens": 0}

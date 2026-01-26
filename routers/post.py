@@ -68,6 +68,10 @@ def get_feed(
                 "text": p["text"],
                 "likes_count": p["likes_count"],
                 "comments_count": p["comments_count"],
+                "liked_by_user_ids": p.get("liked_by_user_ids", []),
+                "is_liked": user.id in (p.get("liked_by_user_ids") or []),
+                "saved_by_user_ids": p.get("saved_by_user_ids", []),
+                "is_saved": user.id in (p.get("saved_by_user_ids") or []),
                 "created_at": p["created_at"].isoformat()
             }
             for p in posts
@@ -97,6 +101,43 @@ def get_my_posts(
                 "text": p["text"],
                 "likes_count": p["likes_count"],
                 "comments_count": p["comments_count"],
+                "liked_by_user_ids": p.get("liked_by_user_ids", []),
+                "is_liked": user.id in (p.get("liked_by_user_ids") or []),
+                "saved_by_user_ids": p.get("saved_by_user_ids", []),
+                "is_saved": user.id in (p.get("saved_by_user_ids") or []),
+                "created_at": p["created_at"].isoformat()
+            }
+            for p in posts
+        ]
+    }
+
+
+@router.get("/saved")
+def get_saved_posts(
+    limit: int = 20,
+    offset: int = 0,
+    user: CurrentUser = Depends(get_current_user)
+):
+    """Get posts saved by current user."""
+    posts = PostRepository.get_saved_posts(UUID(user.id), limit=limit, offset=offset)
+
+    return {
+        "success": True,
+        "count": len(posts),
+        "posts": [
+            {
+                "id": str(p["id"]),
+                "user_id": str(p["user_id"]),
+                "user_name": f"{p['first_name']} {p['last_name']}",
+                "user_profile_image": p["user_profile_image"],
+                "image_url": p["image_url"],
+                "text": p["text"],
+                "likes_count": p["likes_count"],
+                "comments_count": p["comments_count"],
+                "liked_by_user_ids": p.get("liked_by_user_ids", []),
+                "is_liked": user.id in (p.get("liked_by_user_ids") or []),
+                "saved_by_user_ids": p.get("saved_by_user_ids", []),
+                "is_saved": True,
                 "created_at": p["created_at"].isoformat()
             }
             for p in posts
@@ -116,15 +157,16 @@ def delete_post(post_id: str, user: CurrentUser = Depends(get_current_user)):
 
 @router.post("/{post_id}/like")
 def like_post(post_id: str, user: CurrentUser = Depends(get_current_user)):
-    """Like a post (increment likes count)."""
-    result = PostRepository.increment_likes(post_id)
-    if not result:
-        raise HTTPException(status_code=404, detail="Post not found")
+    """Like a post. User can only like once."""
+    result = PostRepository.like_post(UUID(post_id), UUID(user.id))
+    return result
 
-    return {
-        "success": True,
-        "likes_count": result["likes_count"]
-    }
+
+@router.post("/{post_id}/save")
+def save_post(post_id: str, user: CurrentUser = Depends(get_current_user)):
+    """Save a post. User can only save once."""
+    result = PostRepository.save_post(UUID(post_id), UUID(user.id))
+    return result
 
 
 @router.get("/{post_id}/comments")

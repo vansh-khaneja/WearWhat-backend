@@ -90,6 +90,24 @@ def get_image_features(image_url: str):
     return image_features
 
 
+def get_text_embedding(text: str) -> list:
+    """
+    Get CLIP embedding for a text prompt.
+
+    Args:
+        text: Text description (e.g., "blue formal shirt")
+
+    Returns:
+        512-dim embedding as list
+    """
+    with torch.no_grad():
+        tokens = clip.tokenize([text]).to(device)
+        text_features = model.encode_text(tokens)
+        text_features /= text_features.norm(dim=-1, keepdim=True)
+
+    return text_features.cpu().numpy().flatten().tolist()
+
+
 def get_specific_attributes_for_group(group_key: str, image_features) -> dict:
     """Get specific attributes for a category group using CLIP."""
     attributes = {}
@@ -203,8 +221,12 @@ def generate_tags(image_url: str) -> dict:
     specific_attrs = get_specific_attributes_for_group(group_key, image_features)
     attributes.update(specific_attrs)
 
+    # Convert embedding to list for storage
+    embedding = image_features.cpu().numpy().flatten().tolist()
+
     return {
         "categoryGroup": group_key,
         "category": category,
-        "attributes": attributes
+        "attributes": attributes,
+        "embedding": embedding
     }

@@ -21,3 +21,13 @@ CLERK_ISSUER = os.getenv("CLERK_ISSUER", "https://literate-wahoo-99.clerk.accoun
 
 # OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# Google Gemini
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Qdrant Cloud
+QDRANT_URL = os.getenv("QDRANT_URL")  # e.g., https://xxx.cloud.qdrant.io
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
+# OpenWeatherMap
+OPENWEATHERMAP_API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
