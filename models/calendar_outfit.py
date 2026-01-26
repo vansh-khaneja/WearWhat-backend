@@ -8,6 +8,7 @@ class SaveCalendarOutfitRequest(BaseModel):
     combined_image_url: str
     prompt: Optional[str] = None
     temperature: Optional[float] = None
+    weather: Optional[str] = None
     selected_categories: List[str] = []
     items: List[dict] = []
 
@@ -18,6 +19,7 @@ class CalendarOutfitResponse(BaseModel):
     combined_image_url: str
     prompt: Optional[str]
     temperature: Optional[float]
+    weather: Optional[str]
     selected_categories: List[str]
     items: List[dict]
     created_at: str

@@ -12,6 +12,7 @@ class CalendarOutfitRepository:
         combined_image_url: str,
         prompt: Optional[str],
         temperature: Optional[float],
+        weather: Optional[str],
         selected_categories: List[str],
         items: List[dict]
     ) -> dict:
@@ -34,17 +35,18 @@ class CalendarOutfitRepository:
         cur.execute(
             """
             INSERT INTO calendar_outfits
-                (user_id, outfit_date, combined_image_url, prompt, temperature, selected_categories, items)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                (user_id, outfit_date, combined_image_url, prompt, temperature, weather, selected_categories, items)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (user_id, outfit_date)
             DO UPDATE SET
                 combined_image_url = EXCLUDED.combined_image_url,
                 prompt = EXCLUDED.prompt,
                 temperature = EXCLUDED.temperature,
+                weather = EXCLUDED.weather,
                 selected_categories = EXCLUDED.selected_categories,
                 items = EXCLUDED.items,
                 created_at = NOW()
-            RETURNING id, user_id, outfit_date, combined_image_url, prompt, temperature, selected_categories, items, created_at
+            RETURNING id, user_id, outfit_date, combined_image_url, prompt, temperature, weather, selected_categories, items, created_at
             """,
             (
                 str(user_id),
@@ -52,6 +54,7 @@ class CalendarOutfitRepository:
                 combined_image_url,
                 prompt,
                 temperature,
+                weather,
                 json.dumps(selected_categories),
                 json.dumps(items)
             )
@@ -69,7 +72,7 @@ class CalendarOutfitRepository:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT id, user_id, outfit_date, combined_image_url, prompt, temperature, selected_categories, items, created_at
+            SELECT id, user_id, outfit_date, combined_image_url, prompt, temperature, weather, selected_categories, items, created_at
             FROM calendar_outfits
             WHERE user_id = %s
             ORDER BY outfit_date ASC
@@ -88,7 +91,7 @@ class CalendarOutfitRepository:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT id, user_id, outfit_date, combined_image_url, prompt, temperature, selected_categories, items, created_at
+            SELECT id, user_id, outfit_date, combined_image_url, prompt, temperature, weather, selected_categories, items, created_at
             FROM calendar_outfits
             WHERE user_id = %s AND outfit_date = %s
             """,

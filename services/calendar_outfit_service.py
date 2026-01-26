@@ -11,6 +11,7 @@ class CalendarOutfitService:
         combined_image_url: str,
         prompt: Optional[str] = None,
         temperature: Optional[float] = None,
+        weather: Optional[str] = None,
         selected_categories: List[str] = None,
         items: List[dict] = None
     ) -> dict:
@@ -26,6 +27,7 @@ class CalendarOutfitService:
             combined_image_url=combined_image_url,
             prompt=prompt,
             temperature=temperature,
+            weather=weather,
             selected_categories=selected_categories,
             items=items
         )

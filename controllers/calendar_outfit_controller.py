@@ -11,6 +11,7 @@ def save_calendar_outfit_controller(request: SaveCalendarOutfitRequest, user: Cu
         combined_image_url=request.combined_image_url,
         prompt=request.prompt,
         temperature=request.temperature,
+        weather=request.weather,
         selected_categories=request.selected_categories,
         items=request.items
     )
