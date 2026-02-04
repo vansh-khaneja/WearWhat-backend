@@ -81,51 +81,62 @@ class ImageCombinerService:
         left_width = int(size * 0.6)  # Left column 60%
         right_width = size - left_width  # Right column 40%
 
-        upper_height = int(size * 0.45)  # Upper wear area
-        bottom_height = int(size * 0.55)  # Bottom wear area
+        upper_height = int(size * 0.50)  # Upper wear area - equal split
+        bottom_height = int(size * 0.50)  # Bottom wear area - equal split
 
-        # Place upper wear (top-left, large)
+        # Size hierarchy: clothing (largest) > footwear > accessories (smallest)
+        main_item_size = int(size * 0.46)  # Max size for main clothing items
+        footwear_size = int(size * 0.32)   # Medium size for footwear (increased)
+        accessory_size = int(size * 0.22)  # Smallest size for accessories
+
+        # Place upper wear (top-left) - largest
         if upper_wear:
             img = upper_wear[0]
-            resized = ImageCombinerService.resize_contain(img, left_width - 20, upper_height - 20)
+            resized = ImageCombinerService.resize_contain(img, main_item_size, main_item_size)
             x = (left_width - resized.width) // 2
             y = (upper_height - resized.height) // 2
             combined.paste(resized, (x, y), resized if resized.mode == 'RGBA' else None)
 
-        # Place outer wear (over upper wear if exists, or in upper area)
+        # Track outer wear height for accessories positioning
+        outer_wear_area_height = 0
+
+        # Place outer wear (top-right) - same size as upper wear
         if outer_wear:
             img = outer_wear[0]
-            resized = ImageCombinerService.resize_contain(img, left_width - 40, upper_height - 40)
-            x = (left_width - resized.width) // 2
-            y = (upper_height - resized.height) // 2
+            outer_wear_area_height = int(size * 0.45)  # Top 45% of right side for outer wear
+            resized = ImageCombinerService.resize_contain(img, right_width - 10, main_item_size)
+            x = left_width + (right_width - resized.width) // 2
+            y = (outer_wear_area_height - resized.height) // 2
             combined.paste(resized, (x, y), resized if resized.mode == 'RGBA' else None)
 
-        # Place bottom wear (bottom-left, large)
+        # Place bottom wear (bottom-left) - same size as upper wear
         if bottom_wear:
             img = bottom_wear[0]
-            resized = ImageCombinerService.resize_contain(img, left_width - 20, bottom_height - 20)
+            resized = ImageCombinerService.resize_contain(img, main_item_size, main_item_size)
             x = (left_width - resized.width) // 2
             y = upper_height + (bottom_height - resized.height) // 2
             combined.paste(resized, (x, y), resized if resized.mode == 'RGBA' else None)
 
-        # Place footwear (bottom-right)
+        # Place footwear (bottom-right) - medium size
         if footwear:
             img = footwear[0]
-            foot_height = int(size * 0.35)
-            resized = ImageCombinerService.resize_contain(img, right_width - 20, foot_height - 20)
+            foot_area_height = int(size * 0.32)
+            resized = ImageCombinerService.resize_contain(img, footwear_size, footwear_size)
             x = left_width + (right_width - resized.width) // 2
-            y = size - foot_height + (foot_height - resized.height) // 2
+            y = size - foot_area_height + (foot_area_height - resized.height) // 2
             combined.paste(resized, (x, y), resized if resized.mode == 'RGBA' else None)
 
-        # Place accessories (stacked on right side, top area)
+        # Place accessories (stacked on right side, below outer wear if present) - smallest
         if accessories:
-            acc_area_height = int(size * 0.65)  # Top 65% of right side
+            foot_area_height = int(size * 0.32)
+            acc_start_y = outer_wear_area_height
+            acc_area_height = size - foot_area_height - outer_wear_area_height
             acc_item_height = acc_area_height // max(len(accessories), 1)
 
-            for idx, img in enumerate(accessories[:4]):  # Max 4 accessories
-                resized = ImageCombinerService.resize_contain(img, right_width - 30, acc_item_height - 15)
+            for idx, img in enumerate(accessories[:3]):  # Max 3 accessories
+                resized = ImageCombinerService.resize_contain(img, accessory_size, accessory_size)
                 x = left_width + (right_width - resized.width) // 2
-                y = idx * acc_item_height + (acc_item_height - resized.height) // 2
+                y = acc_start_y + idx * acc_item_height + (acc_item_height - resized.height) // 2
                 combined.paste(resized, (x, y), resized if resized.mode == 'RGBA' else None)
 
         # Convert to RGB for JPEG
