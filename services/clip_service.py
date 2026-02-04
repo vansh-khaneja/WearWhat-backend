@@ -7,6 +7,8 @@ import torch
 import clip
 from PIL import Image
 
+from config import MINIO_ENDPOINT, MINIO_PUBLIC_URL, MINIO_SECURE
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TAGS_DIR = os.path.join(BASE_DIR, "tags")
 
@@ -79,7 +81,14 @@ print("CLIP labels loaded.")
 
 def get_image_features(image_url: str):
     """Download image and extract CLIP features."""
-    response = requests.get(image_url)
+    # Convert public URL to internal URL for Docker networking
+    protocol = "https" if MINIO_SECURE else "http"
+    public_prefix = f"{protocol}://{MINIO_PUBLIC_URL}/"
+    internal_prefix = f"{protocol}://{MINIO_ENDPOINT}/"
+
+    internal_url = image_url.replace(public_prefix, internal_prefix)
+
+    response = requests.get(internal_url)
     image = Image.open(BytesIO(response.content)).convert("RGB")
     image_input = preprocess(image).unsqueeze(0).to(device)
 

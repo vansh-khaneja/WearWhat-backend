@@ -133,3 +133,35 @@ class StudioRepository:
             }
             for r in records
         ]
+
+    @staticmethod
+    def delete_by_item_id(user_id: UUID, item_id: UUID) -> List[str]:
+        """Delete all studio images for a wardrobe item. Returns list of studio_image_urls for cleanup."""
+        conn = get_connection()
+        cur = conn.cursor()
+
+        # First get the URLs to return for MinIO cleanup
+        cur.execute(
+            """
+            SELECT studio_image_url FROM studio_images
+            WHERE user_id = %s AND item_id = %s
+            """,
+            (str(user_id), str(item_id))
+        )
+        records = cur.fetchall()
+        urls = [r["studio_image_url"] for r in records]
+
+        # Then delete the records
+        cur.execute(
+            """
+            DELETE FROM studio_images
+            WHERE user_id = %s AND item_id = %s
+            """,
+            (str(user_id), str(item_id))
+        )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return urls

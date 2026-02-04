@@ -6,7 +6,7 @@ from repositories.wardrobe_repository import WardrobeRepository
 from repositories.studio_repository import StudioRepository
 from repositories.user_repository import UserRepository
 from services.studio_image_service import StudioImageService
-from services.cloudinary_service import upload_image
+from services.s3_service import upload_studio_image
 
 
 # Category-specific prompts for garment reconstruction
@@ -96,15 +96,15 @@ def generate_studio_image_controller(user_id: str, item_id: str) -> dict:
         generated_image.save(img_buffer, format="PNG")
         img_buffer.seek(0)
 
-        cloudinary_url = upload_image(img_buffer, folder="wearwhat/studio")
-        print(f"[STUDIO CONTROLLER] Uploaded to Cloudinary: {cloudinary_url}")
+        s3_url = upload_studio_image(img_buffer)
+        print(f"[STUDIO CONTROLLER] Uploaded to S3: {s3_url}")
 
         # 6. Save record to database
         record = StudioRepository.save(
             user_id=UUID(user_id),
             item_id=UUID(item_id),
             original_image_url=image_url,
-            studio_image_url=cloudinary_url,
+            studio_image_url=s3_url,
             category_group=category_group
         )
         print(f"[STUDIO CONTROLLER] Saved record: {record['id']}")
@@ -113,7 +113,7 @@ def generate_studio_image_controller(user_id: str, item_id: str) -> dict:
         WardrobeRepository.update_image(
             item_id=UUID(item_id),
             user_id=UUID(user_id),
-            image_url=cloudinary_url
+            image_url=s3_url
         )
         print(f"[STUDIO CONTROLLER] Updated wardrobe item image")
 
@@ -126,7 +126,7 @@ def generate_studio_image_controller(user_id: str, item_id: str) -> dict:
         return {
             "success": True,
             "id": record["id"],
-            "image_url": cloudinary_url,
+            "image_url": s3_url,
             "item_id": item_id,
             "category_group": category_group,
             "original_image_url": image_url,

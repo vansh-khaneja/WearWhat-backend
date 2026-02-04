@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, Depends, UploadFile, File
 
 from models.auth import SignupRequest, LoginRequest, UpdateUserRequest, ClerkRegisterRequest
-from services.cloudinary_service import upload_profile_image
+from services.s3_service import upload_profile_image
 from services.auth_service import (
     create_user,
     get_user_by_email,

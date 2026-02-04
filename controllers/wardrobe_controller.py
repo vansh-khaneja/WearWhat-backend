@@ -1,13 +1,14 @@
 from uuid import UUID
 from fastapi import UploadFile
 
-from services.cloudinary_service import upload_image
+from services.s3_service import upload_image, delete_image
 from services.clip_service import generate_tags
 from services.wardrobe_tags_service import WardrobeTagsService
 from services.background_removal_service import remove_background
 from services.qdrant_service import store_embedding, delete_embedding
 from dependencies.auth import CurrentUser
 from repositories.wardrobe_repository import WardrobeRepository
+from repositories.studio_repository import StudioRepository
 
 
 def upload_wardrobe_item(file: UploadFile, user: CurrentUser):
@@ -92,10 +93,30 @@ def get_user_wardrobe(user: CurrentUser):
     }
 
 def delete_wardrobe_item(item_id: str, user: CurrentUser):
+    # Get item first to get the image URL
+    item = WardrobeRepository.get_by_id(item_id)
+
+    if not item or str(item["user_id"]) != user.id:
+        return {"success": False, "message": "Item not found or not authorized"}
+
+    image_url = item.get("image_url")
+
+    # Delete studio images first (get URLs before deleting from DB)
+    studio_image_urls = StudioRepository.delete_by_item_id(UUID(user.id), UUID(item_id))
+
+    # Delete from database
     deleted = WardrobeRepository.delete(item_id, UUID(user.id))
 
     if not deleted:
-        return {"success": False, "message": "Item not found or not authorized"}
+        return {"success": False, "message": "Failed to delete item"}
+
+    # Delete wardrobe image from MinIO
+    if image_url:
+        delete_image(image_url)
+
+    # Delete studio images from MinIO
+    for studio_url in studio_image_urls:
+        delete_image(studio_url)
 
     # Remove item from wardrobe tags tree
     WardrobeTagsService.remove_item(UUID(user.id), item_id)

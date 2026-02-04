@@ -6,12 +6,12 @@ import requests
 from fastapi import HTTPException, Request
 from jose import jwt
 
-from config import CLERK_ISSUER
+from config import CLERK_JWKS_URL
 from services.auth_service import get_user_by_id
 from repositories.user_repository import UserRepository
 
 # Clerk JWKS URL
-JWKS_URL = f"{CLERK_ISSUER}/.well-known/jwks.json"
+JWKS_URL = CLERK_JWKS_URL
 
 # Cache for JWKS (public keys)
 _jwks_cache = None
@@ -45,8 +45,7 @@ def verify_clerk_jwt(token: str) -> Optional[dict]:
             token,
             jwks,
             algorithms=["RS256"],
-            issuer=CLERK_ISSUER,
-            options={"verify_aud": False},
+            options={"verify_aud": False, "verify_iss": False},
         )
         return payload
     except Exception as e:

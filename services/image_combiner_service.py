@@ -3,14 +3,23 @@ from io import BytesIO
 import requests
 from typing import List, Dict
 
-from services.cloudinary_service import cloudinary
-import cloudinary.uploader
+from services.s3_service import upload_outfit_image
+from config import MINIO_ENDPOINT, MINIO_PUBLIC_URL, MINIO_SECURE
 
 class ImageCombinerService:
     @staticmethod
     def download_image(url: str) -> Image.Image:
         """Download image from URL and return PIL Image."""
-        response = requests.get(url)
+        # Convert public URL to internal URL for Docker networking
+        protocol = "https" if MINIO_SECURE else "http"
+        public_prefix = f"{protocol}://{MINIO_PUBLIC_URL}/"
+        internal_prefix = f"{protocol}://{MINIO_ENDPOINT}/"
+
+        internal_url = url
+        if url.startswith(public_prefix):
+            internal_url = url.replace(public_prefix, internal_prefix)
+
+        response = requests.get(internal_url)
         return Image.open(BytesIO(response.content)).convert("RGBA")
 
     @staticmethod
@@ -148,11 +157,5 @@ class ImageCombinerService:
         combined_rgb.save(buffer, format='JPEG', quality=90)
         buffer.seek(0)
 
-        # Upload to Cloudinary
-        result = cloudinary.uploader.upload(
-            buffer,
-            folder="outfit_recommendations",
-            resource_type="image"
-        )
-
-        return result.get("secure_url")
+        # Upload to S3
+        return upload_outfit_image(buffer)

@@ -3,7 +3,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from qdrant_client.http.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
 
-from config import QDRANT_URL, QDRANT_API_KEY
+from config import QDRANT_HOST, QDRANT_PORT
 
 
 # Collection name for wardrobe embeddings
@@ -14,10 +14,10 @@ EMBEDDING_DIM = 512
 
 
 def get_qdrant_client() -> QdrantClient:
-    """Get Qdrant client instance for Qdrant Cloud."""
+    """Get Qdrant client instance for local Qdrant."""
     return QdrantClient(
-        url=QDRANT_URL,
-        api_key=QDRANT_API_KEY
+        host=QDRANT_HOST,
+        port=QDRANT_PORT
     )
 
 
